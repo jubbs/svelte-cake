@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -14,6 +15,7 @@ declare(strict_types=1);
  * @since     3.3.0
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace App;
 
 use Cake\Core\Configure;
@@ -23,10 +25,18 @@ use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
 use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\Middleware\CsrfProtectionMiddleware;
-use Cake\Http\MiddlewareQueue;
 use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
+
+use Authentication\AuthenticationService;
+use Authentication\AuthenticationServiceInterface;
+use Authentication\AuthenticationServiceProviderInterface;
+use Authentication\Identifier\IdentifierInterface;
+use Authentication\Middleware\AuthenticationMiddleware;
+use Cake\Http\MiddlewareQueue;
+use Cake\Routing\Router;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Application setup class.
@@ -34,7 +44,7 @@ use Cake\Routing\Middleware\RoutingMiddleware;
  * This defines the bootstrapping logic and middleware layers you
  * want to use in your application.
  */
-class Application extends BaseApplication
+class Application extends BaseApplication implements AuthenticationServiceProviderInterface
 {
     /**
      * Load all the application configuration and bootstrap logic.
@@ -62,6 +72,8 @@ class Application extends BaseApplication
         if (Configure::read('debug')) {
             $this->addPlugin('DebugKit');
         }
+
+        $this->addPlugin('Authentication');
 
         // Load more plugins here
     }
@@ -96,6 +108,9 @@ class Application extends BaseApplication
             // available as array through $request->getData()
             // https://book.cakephp.org/4/en/controllers/middleware.html#body-parser-middleware
             ->add(new BodyParserMiddleware())
+            // Add the AuthenticationMiddleware. It should be
+            // after routing and body parser.
+            ->add(new AuthenticationMiddleware($this))
 
             // Cross Site Request Forgery (CSRF) Protection Middleware
             // https://book.cakephp.org/4/en/security/csrf.html#cross-site-request-forgery-csrf-middleware
@@ -133,4 +148,47 @@ class Application extends BaseApplication
 
         // Load more plugins here
     }
+    public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
+{
+      
+       //  debug($request);
+        $authenticationService = new AuthenticationService();
+
+        if (!$request->is('json')) {
+            $authenticationService->setConfig([
+                'unauthenticatedRedirect' => Router::url('/users/login'),
+                'queryParam' => 'redirect',
+            ]);
+
+        }
+
+        // If the request has an Auth header or a token query param then use token authentication
+
+        if ($request->getHeader('Authorization') || $request->getQuery('token')) {
+            $authenticationService->loadIdentifier('Authentication.Token');
+            $authenticationService->loadAuthenticator('Authentication.Token', [
+                'queryParam' => 'token',
+                'header' => 'Authorization',
+                'tokenPrefix' => 'Token'
+            ]);
+        } else {
+            $authenticationService->loadIdentifier('Authentication.Password', [
+                'fields' => [
+                    'username' => 'username',
+                    'password' => 'password',
+                ]
+            ]);
+            $authenticationService->loadAuthenticator('Authentication.Session');
+            $authenticationService->loadAuthenticator('Authentication.Form', [
+                'fields' => [
+                    'username' => 'username',
+                    'password' => 'password',
+                ],
+                'loginUrl' => [Router::url('/users/login'), Router::url('/users/login.json')],
+            ]);
+        }
+
+
+        return $authenticationService;
+}
 }
