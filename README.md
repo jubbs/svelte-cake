@@ -1,53 +1,75 @@
-# CakePHP Application Skeleton
+# CakePHP Application Skeleton with Svelte client
 
-![Build Status](https://github.com/cakephp/app/actions/workflows/ci.yml/badge.svg?branch=master)
-[![Total Downloads](https://img.shields.io/packagist/dt/cakephp/app.svg?style=flat-square)](https://packagist.org/packages/cakephp/app)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level%207-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+Reproduce
 
-A skeleton for creating applications with [CakePHP](https://cakephp.org) 4.x.
+Install cake 
 
-The framework source code can be found here: [cakephp/cakephp](https://github.com/cakephp/cakephp).
+create client folder in the root
+npm create vite@latest
+```
+    Need to install the following packages:
+    create-vite@4.4.0
+    Ok to proceed? (y) 
+    ✔ Project name: … vite-project
+    ✔ Select a framework: › Svelte
+    ✔ Select a variant: › JavaScript
 
-## Installation
+    Scaffolding project in ...workspace/svelte-cake/client/vite-project...
 
-1. Download [Composer](https://getcomposer.org/doc/00-intro.md) or update `composer self-update`.
-2. Run `php composer.phar create-project --prefer-dist cakephp/app [app_name]`.
+    Done. Now run:
 
-If Composer is installed globally, run
+    cd vite-project
+    npm install
+    npm run dev
+```
+Configure the vite server proxy to point to the cake server
+https://vitejs.dev/config/server-options.html#server-proxy
 
-```bash
-composer create-project --prefer-dist cakephp/app
+vite.config.js
+```
+import { defineConfig } from 'vite'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [svelte()],
+  server: {
+    proxy: {
+      '/api': 'http://localhost:8765'
+    }
+  }
+})
+```
+## Create the APIs in cake
+https://book.cakephp.org/4/en/views/json-and-xml-views.html
+https://www.youtube.com/watch?v=GZPUlQEnAkA&t=5s
+
+
+Add the view classes to the controllers that you want
+```
+    public function viewClasses(): array
+    {
+        return [JsonView::class];
+    }
 ```
 
-In case you want to use a custom app dir name (e.g. `/myapp/`):
+The action must output json
+```public function index()
+    {
+        $roles = $this->paginate($this->Roles);
 
-```bash
-composer create-project --prefer-dist cakephp/app myapp
+        $this->set(compact('roles'));
+        $this->viewBuilder()->setOption('serialize', 'roles');
+    }
 ```
 
-You can now either use your machine's webserver to view the default home page, or start
-up the built-in webserver with:
-
-```bash
-bin/cake server -p 8765
+Add an api route to the routes.pjp
+Needs to include any controllers that we want to access
 ```
+     $routes->scope('/api', function (RouteBuilder $routes) {
+        $routes->setExtensions(['json']);
+        $routes->resources('Roles');
+    });
+```
+Can either use the extension or the accept header application/json
 
-Then visit `http://localhost:8765` to see the welcome page.
-
-## Update
-
-Since this skeleton is a starting point for your application and various files
-would have been modified as per your needs, there isn't a way to provide
-automated upgrades, so you have to do any updates manually.
-
-## Configuration
-
-Read and edit the environment specific `config/app_local.php` and setup the 
-`'Datasources'` and any other configuration relevant for your application.
-Other environment agnostic settings can be changed in `config/app.php`.
-
-## Layout
-
-The app skeleton uses [Milligram](https://milligram.io/) (v1.3) minimalist CSS
-framework by default. You can, however, replace it with any other library or
-custom styles.
