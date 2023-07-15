@@ -3,6 +3,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\I18n\FrozenTime;
+use Authentication\PasswordHasher\DefaultPasswordHasher;
+use Cake\Mailer\Mailer;
+use League\Container\Exception\NotFoundException;
+use Cake\Routing\Router;
+
 /**
  * Users Controller
  *
@@ -17,7 +23,7 @@ class UsersController extends AppController
         parent::beforeFilter($event);
         // Configure the login action to not require authentication, preventing
         // the infinite redirect loop issue
-        $this->Authentication->addUnauthenticatedActions(['login', 'tokensignin', 'logout', 'resetPassword']);
+        $this->Authentication->addUnauthenticatedActions(['login', 'tokensignin', 'logout', 'resetPassword', 'test']);
     }
     /**
      * Index method
@@ -356,5 +362,9 @@ class UsersController extends AppController
             }
         }
     } 
+
+    public function test(){
+
+    }
 
 }

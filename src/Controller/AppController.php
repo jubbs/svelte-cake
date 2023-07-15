@@ -18,6 +18,7 @@ namespace App\Controller;
 
 use Cake\Controller\Controller;
 use Cake\View\JsonView;
+use Cake\Event\EventInterface;
 
 /**
  * Application Controller
@@ -29,6 +30,11 @@ use Cake\View\JsonView;
  */
 class AppController extends Controller
 {
+
+    public function beforeRender(EventInterface  $event)
+{
+    $this->viewBuilder()->setTheme('AdminLTE');
+}
 
     public function viewClasses(): array
     {
@@ -60,3 +66,5 @@ class AppController extends Controller
         ]);
     }
 }
+
+

@@ -5,13 +5,13 @@
 
     <?= $this->Form->create() ?>
     <fieldset>
-        <?= $this->Form->control('username', ['type' => 'text', 'required' => true, 'templates' => 'emailFieldTemplate', 'label' => '', 'placeholder' => 'email or username']) ?>
-        <?= $this->Form->control('password', ['type' => 'password', 'required' => true, 'templates' => 'passwordFieldTemplate', 'label' => '', 'placeholder' => 'password']) ?>
+        <?= $this->Form->control('username', ['type' => 'text', 'required' => true, 'label' => '', 'placeholder' => 'email or username']) ?>
+        <?= $this->Form->control('password', ['type' => 'password', 'required' => true, 'label' => '', 'placeholder' => 'password']) ?>
 
     </fieldset>
     <div class="row">
         <div class="col-xs-8">
-            <?= $this->Form->control('RememberMe', ['type' => 'checkbox', 'templates' => 'FieldTemplate']) ?>
+            <?= $this->Form->control('RememberMe', ['type' => 'checkbox']) ?>
         </div>
         <!-- /.col -->
         <div class="col-xs-4">
