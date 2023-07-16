@@ -4,27 +4,24 @@
  * @var \App\Model\Entity\Role $role
  */
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('List Roles'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column-responsive column-80">
-        <div class="roles form content">
-            <?= $this->Form->create($role) ?>
-            <fieldset>
-                <legend><?= __('Add Role') ?></legend>
-                <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('level');
-                    echo $this->Form->control('notes');
-                    echo $this->Form->control('auth_matrix');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
-    </div>
+<?php $this->extend('/layout/TwitterBootstrap/dashboard'); ?>
+
+<?php $this->start('tb_actions'); ?>
+<li><?= $this->Html->link(__('List Roles'), ['action' => 'index'], ['class' => 'nav-link']) ?></li>
+<?php $this->end(); ?>
+<?php $this->assign('tb_sidebar', '<ul class="nav flex-column">' . $this->fetch('tb_actions') . '</ul>'); ?>
+
+<div class="roles form content">
+    <?= $this->Form->create($role) ?>
+    <fieldset>
+        <legend><?= __('Add Role') ?></legend>
+        <?php
+            echo $this->Form->control('name');
+            echo $this->Form->control('level');
+            echo $this->Form->control('notes');
+            echo $this->Form->control('auth_matrix');
+        ?>
+    </fieldset>
+    <?= $this->Form->button(__('Submit')) ?>
+    <?= $this->Form->end() ?>
 </div>

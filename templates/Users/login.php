@@ -1,70 +1,43 @@
-<?php $this->layout = 'login'; ?>
+<?php
 
-<div class="users form">
-    <?= $this->Flash->render() ?>
+$this->extend('../layout/TwitterBootstrap/signin');
 
-    <?= $this->Form->create() ?>
-    <fieldset>
-        <?= $this->Form->control('username', ['type' => 'text', 'required' => true, 'label' => '', 'placeholder' => 'email or username']) ?>
-        <?= $this->Form->control('password', ['type' => 'password', 'required' => true, 'label' => '', 'placeholder' => 'password']) ?>
-
-    </fieldset>
-    <div class="row">
-        <div class="col-xs-8">
-            <?= $this->Form->control('RememberMe', ['type' => 'checkbox']) ?>
-        </div>
-        <!-- /.col -->
-        <div class="col-xs-4">
-            <?php echo $this->Form->submit(__('Login'));
-            ?>
-        </div>
-        <?= $this->Form->end() ?>
-
-        <div class="col-xs-12" style="display:flex; justify-content: space-between">
-            <div>
-            <?php 
-            // echo $this->Form->postLink('Google', [
-            //     'prefix' => false,
-            //     'plugin' => 'ADmad/SocialAuth',
-            //     'controller' => 'Auth',
-            //     'action' => 'login',
-            //     'provider' => 'google',
-            //     '?' => ['redirect' => $this->request->getQuery('redirect')]
-            // ], ['class' => 'btn button-google']);
-
-            ?>
-            </div><div>
-
-            <?php echo $this->Html->link('Create Account', [
-                'action' => 'registerUser'
-            ], ['class' => 'btn btn-warning']);
-
-            ?>
-            </div>
-        </div>
+?>
 
 
-        <!-- /.col -->
-    </div>
+<!-- /.login-logo -->
+
+<?= $this->Flash->render() ?>
 
 
 
-</div>
-<style>
-    .button-google {
-        background-image: url("/img/btn_google_signin.png");
-        background-color: #ffffff;
-        width: 133px;
-        background-size: contain;
-        border: none;
-        text-indent: 1000px;
-        overflow: hidden;
-    }
-</style>
-<div style="width:100%; text-align:center; padding:20px;">
-<?= $this->Html->link(
-    'Forgot Password',
-    ['controller' => 'Users', 'action' => 'resetPassword'],
-    ['class' => 'button', 'target' => '_blank']
-); ?>
-</div>
+<main class="form-signin w-100 m-auto">
+
+  
+  
+  
+  
+  <?= $this->Form->create(null) ?>
+  <img class="mb-4" src="https://svelte.dev/_app/immutable/assets/svelte-logo.5c5d7d20.svg" alt="Svelte" width="72" height="57">
+  <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+  
+  <div class="form-floating">
+    <?= $this->Form->text('username', ['required' => true, 'label' => '', 'class' => 'form-control', 'placeholder' => 'Email or Username']) ?>
+    <label for="floatingInput">Email address / Username</label>
+  </div>
+  <div class="form-floating">
+    <?= $this->Form->pasword('password', ['required' => true, 'label' => '', 'class' => 'form-control', 'placeholder' => 'Password']) ?>
+    <label for="floatingPassword">Password</label>
+  </div>
+  
+  <div class="form-check text-start my-3">
+    <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
+    <label class="form-check-label" for="flexCheckDefault">
+      Remember me
+    </label>
+  </div>
+  
+  <?php echo $this->Form->submit('Sign In', ['class' => 'btn btn-primary w-100 py-2']); ?>
+  <p class="mt-5 mb-3 text-body-secondary">HHA</p>
+  <?= $this->Form->end() ?>
+</main>

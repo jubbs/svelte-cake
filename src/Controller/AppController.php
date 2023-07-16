@@ -31,10 +31,7 @@ use Cake\Event\EventInterface;
 class AppController extends Controller
 {
 
-    public function beforeRender(EventInterface  $event)
-{
-    $this->viewBuilder()->setTheme('AdminLTE');
-}
+
 
     public function viewClasses(): array
     {
@@ -65,6 +62,34 @@ class AppController extends Controller
             'logoutRedirect' => '/users/login'  // Default is false
         ]);
     }
+    public function beforeFilter(EventInterface $event)
+    {
+
+        
+        $this->currentUser = false;
+        if ($this->Authentication->getIdentity()) {
+
+            
+            if ($this->Authentication->getIdentity()->getIdentifier() == null) {
+                $this->Authentication->logout();
+                return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+            }
+            //  EventManager::instance()->on(new RequestMetadata($this->request, $this->Authentication->getIdentity()->getIdentifier())); for audit stash
+            $UsersTable = $this->fetchTable('Users');
+            $this->currentUser =  $UsersTable->get($this->Authentication->getIdentity()->getIdentifier(), 
+                    ['contain' => [
+                        'Roles']]);
+            $this->set('currentUser', $this->currentUser);
+
+
+
+
+
+        } 
+
+
+    }
+
 }
 
 
